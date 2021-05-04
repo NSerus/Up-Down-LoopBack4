@@ -10,15 +10,16 @@ import {
 import fs from 'fs';
 import path from 'path';
 import {promisify} from 'util';
+import {STORAGE_DIRECTORY} from '../keys';
 
 const readdir = promisify(fs.readdir);
-
-const SANDBOX = path.resolve(__dirname, '../../.sandbox');
 
 /**
  * A controller to handle file downloads using multipart/form-data media type
  */
- export class FileDownloadController {
+
+export class FileDownloadController {
+  constructor(@inject(STORAGE_DIRECTORY) private storageDirectory: string) {}
   @get('/files', {
     responses: {
       200: {
@@ -38,7 +39,7 @@ const SANDBOX = path.resolve(__dirname, '../../.sandbox');
     },
   })
   async listFiles() {
-    const files = await readdir(SANDBOX);
+    const files = await readdir(this.storageDirectory);
     return files;
   }
 
@@ -58,8 +59,8 @@ const SANDBOX = path.resolve(__dirname, '../../.sandbox');
    * @param fileName - File name
    */
   private validateFileName(fileName: string) {
-    const resolved = path.resolve(SANDBOX, fileName);
-    if (resolved.startsWith(SANDBOX)) return resolved;
+    const resolved = path.resolve(this.storageDirectory, fileName);
+    if (resolved.startsWith(this.storageDirectory)) return resolved;
     // The resolved file is outside sandbox
     throw new HttpErrors.BadRequest(`Invalid file name: ${fileName}`);
   }

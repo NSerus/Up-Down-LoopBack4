@@ -6,9 +6,9 @@ import {
   Response,
   RestBindings,
 } from '@loopback/rest';
-
 import {FILE_UPLOAD_SERVICE} from '../keys';
 import {FileUploadHandler} from '../types';
+
 /**
  * A controller to handle file uploads using multipart/form-data media type
  */
@@ -20,7 +20,6 @@ export class FileUploadController {
   constructor(
     @inject(FILE_UPLOAD_SERVICE) private handler: FileUploadHandler,
   ) {}
-
   @post('/files', {
     responses: {
       200: {
@@ -41,7 +40,7 @@ export class FileUploadController {
     @inject(RestBindings.Http.RESPONSE) response: Response,
   ): Promise<object> {
     return new Promise<object>((resolve, reject) => {
-      this.handler(request, response, (err:unknown) => {
+      this.handler(request, response, (err: unknown) => {
         if (err) reject(err);
         else {
           resolve(FileUploadController.getFilesAndFields(request));
@@ -49,6 +48,7 @@ export class FileUploadController {
       });
     });
   }
+
   /**
    * Get files and fields for the request
    * @param request - Http request
@@ -73,4 +73,3 @@ export class FileUploadController {
     return {files, fields: request.body};
   }
 }
-
